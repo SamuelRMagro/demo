@@ -1,1 +1,3 @@
+-
+- ISSUE-02: Cria endpoint para listar usuarios paginados
 - ISSUE-01: Cria entidade usuario

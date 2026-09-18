@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Generated;
 import org.hibernate.generator.EventType;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "tb_usuarios")
 @Getter
+@Setter
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,9 +42,11 @@ public class Usuario {
     @Generated(event = EventType.INSERT)
     private LocalDateTime dataCadastro = LocalDateTime.now();
 
-    @Column(name = "data_atualizacao")
-    @ColumnDefault("CURRENT_TIMESTAMP")
+    @Column(name = "data_atualizacao", columnDefinition = "TIMESTAMP DEFAULT NULL")
     private LocalDateTime dataAtualizacao;
+
+    @Column(name = "data_inativacao", columnDefinition = "TIMESTAMP DEFAULT NULL")
+    private LocalDateTime dataInativacao = null;
 
     public String cpfMascarado() {
         if (this.cpf == null) return null;
@@ -54,5 +58,17 @@ public class Usuario {
         }
 
         return "***.***.*" + limpo.substring(8, 9) + "-" + limpo.substring(9);
+    }
+
+    public boolean ativo() {
+
+        if (!isAtivo) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean inativo() {
+        return !ativo();
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,5 +28,13 @@ public class UsuarioController {
             )Pageable pageable){
         Page<UsuarioDTO> usuarios = service.listagemUsuarios(pageable);
         return ResponseEntity.ok(usuarios);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioDTO> buscaUsuarioId(
+            @PathVariable Long id
+    ) {
+        UsuarioDTO dto = service.usuarioId(id);
+        return ResponseEntity.ok(dto);
     }
 }

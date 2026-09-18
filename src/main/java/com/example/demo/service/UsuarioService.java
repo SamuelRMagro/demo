@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,5 +67,21 @@ public class UsuarioService {
 
     public UsuarioDTO usuarioId(Long id){
         return converteUsuario(usuarioRepository.findById(id), id);
+    }
+
+    public void inativar(Long id) {
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
+
+        if (usuario.isEmpty()){
+            throw new RegistroNaoEncontradoCustomException(String.format("Usuário de id=%d não encontrado.", id));
+        } else if(usuario.get().inativo()) {
+            return;
+        } else {
+            Usuario user = usuario.get();
+            user.setIsAtivo(false);
+            user.setDataAtualizacao(LocalDateTime.now());
+            user.setDataInativacao(LocalDateTime.now());
+            usuarioRepository.save(user);
+        }
     }
 }

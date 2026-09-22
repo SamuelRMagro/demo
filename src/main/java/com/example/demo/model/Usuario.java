@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Generated;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "tb_usuarios")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +27,7 @@ public class Usuario {
     private String cpf;
 
     @Column(nullable = false)
-    private int idade;
+    private Integer idade;
 
     @Column(unique = true, nullable = false)
     private String login;
@@ -48,10 +50,20 @@ public class Usuario {
     @Column(name = "data_inativacao", columnDefinition = "TIMESTAMP DEFAULT NULL")
     private LocalDateTime dataInativacao = null;
 
+    public Usuario(Boolean isAtivo, String email, String login, Integer idade, String cpf, String nome) {
+        this.isAtivo = isAtivo;
+        this.email = email;
+        this.login = login;
+        this.idade = idade;
+        this.cpf = cpf;
+        this.nome = nome;
+        this.isAtivo = true;
+    }
+
     public String cpfMascarado() {
         if (this.cpf == null) return null;
 
-        String limpo = this.cpf.replace("\\D", "");
+        String limpo = this.cpf.replaceAll("\\D", "");
 
         if (limpo.length() != 11){
             return null;

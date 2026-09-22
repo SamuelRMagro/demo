@@ -1,11 +1,30 @@
 package com.example.demo.dto.exception;
 
-import java.time.LocalDateTime;
+import lombok.Getter;
 
-public record ErroDTO(
-        int status,
-        String error,
-        String message,
-        LocalDateTime timestamp
-) {
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+public class ErroDTO {
+    int status;
+    String error;
+    String message;
+    Long timestamp;
+    List<ErroCampo> erros = new ArrayList<>();
+
+    public ErroDTO(int status, String error, String message, Long timestamp) {
+        this.status = status;
+        this.error = error;
+        this.message = message;
+        this.timestamp = timestamp;
+    }
+
+    public ErroDTO(int status, String error, String message, Long timestamp, List<ErroCampo> erros) {
+        this.status = status;
+        this.error = error;
+        this.message = message;
+        this.timestamp = timestamp;
+        this.erros = erros;
+    }
 }

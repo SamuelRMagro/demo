@@ -1,6 +1,9 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.UsuarioDTO;
+import com.example.demo.dto.exception.ErroCampo;
+import com.example.demo.dto.usuario.UsuarioDTO;
+import com.example.demo.dto.usuario.UsuarioCreateDTO;
+import com.example.demo.exceptions.custom.CadastroInvalidoCustomException;
 import com.example.demo.exceptions.custom.RegistroNaoEncontradoCustomException;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
@@ -10,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +51,7 @@ public class UsuarioService {
         )).toList();
     }
 
-    private UsuarioDTO converteUsuario(Optional<Usuario> optionalUsuario, Long id){
+    private UsuarioDTO converteUsuarioOptional(Optional<Usuario> optionalUsuario, Long id){
 
         if (optionalUsuario.isEmpty()){
             throw new RegistroNaoEncontradoCustomException(String.format("Usuário de id=%d não encontrado.", id));
@@ -59,6 +63,23 @@ public class UsuarioService {
                 user.getEmail(), user.getLogin(), user.cpfMascarado(), user.getDataCadastro(), user.getDataAtualizacao());
     }
 
+    private UsuarioDTO converteUsuario(Usuario usuario){
+        return new UsuarioDTO(usuario.getId(), usuario.getNome(), usuario.getIsAtivo(), usuario.getIdade(),
+                usuario.getEmail(), usuario.getLogin(), usuario.cpfMascarado(), usuario.getDataCadastro(), usuario.getDataAtualizacao());
+    }
+
+    private String limpaCpf(String cpf){
+        if ( cpf == null) return null;
+
+        String limpo = cpf.replaceAll("\\D", "");
+
+        if (limpo.length() != 11){
+            return null;
+        }
+
+        return limpo;
+    }
+
     public Page<UsuarioDTO> listagemUsuarios(Pageable pageable) {
         Page<Usuario> usuarioPage = usuarioRepository.findAll(pageable);
 
@@ -66,7 +87,7 @@ public class UsuarioService {
     }
 
     public UsuarioDTO usuarioId(Long id){
-        return converteUsuario(usuarioRepository.findById(id), id);
+        return converteUsuarioOptional(usuarioRepository.findById(id), id);
     }
 
     public void inativar(Long id) {
@@ -83,5 +104,28 @@ public class UsuarioService {
             user.setDataInativacao(LocalDateTime.now());
             usuarioRepository.save(user);
         }
+    }
+
+    public UsuarioDTO cadastrarUsuario(UsuarioCreateDTO dto) {
+         Usuario usuario = new Usuario(dto.isAtivo(), dto.email(), dto.login(), dto.idade(), limpaCpf(dto.cpf()), dto.nome());
+
+         List<ErroCampo> erros = new ArrayList<>();
+
+         if (usuarioRepository.existsByEmail(usuario.getEmail())){
+             erros.add(new ErroCampo("email", "E-mail já cadastrado."));
+         }
+         if (usuarioRepository.existsByCpf(usuario.getCpf())){
+             erros.add(new ErroCampo("cpf", "CPF já cadastrado."));
+         }
+         if (usuarioRepository.existsByLogin(usuario.getLogin())){
+             erros.add(new ErroCampo("login", "Login já cadastrado."));
+         }
+
+         if (!erros.isEmpty()){
+             throw new CadastroInvalidoCustomException(erros);
+         }
+
+         usuario = usuarioRepository.save(usuario);
+         return converteUsuario(usuario);
     }
 }

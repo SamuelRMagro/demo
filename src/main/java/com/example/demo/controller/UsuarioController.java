@@ -1,17 +1,22 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UsuarioDTO;
+import com.example.demo.dto.usuario.UsuarioCreateDTO;
+import com.example.demo.dto.usuario.UsuarioDTO;
 import com.example.demo.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuarios")
+@Validated
 public class UsuarioController {
 
     @Autowired
@@ -39,5 +44,11 @@ public class UsuarioController {
     public ResponseEntity<Void> inativar(@PathVariable Long id){
         service.inativar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<UsuarioDTO> cadastrar(
+            @Valid @RequestBody UsuarioCreateDTO createDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarUsuario(createDTO));
     }
 }

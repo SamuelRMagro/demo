@@ -1,4 +1,5 @@
-
+-
+- ISSUE-05: Cria endpoint para cadastro de usuario
 - ISSUE-04: Cria endpoint para inativar usuario
 - ISSUE-03: Cria endpoint para busca de usuario por Id
 - ISSUE-02: Cria endpoint para listar usuarios paginados

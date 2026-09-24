@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     Page<Usuario> findAll(Pageable pageable);
@@ -14,4 +16,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByLogin(String login);
+
+    Optional<Usuario> findByIdAndIsAtivoIsTrue(Long id);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
+
+    boolean existsByCpfAndIdNot(String cpf, Long id);
 }

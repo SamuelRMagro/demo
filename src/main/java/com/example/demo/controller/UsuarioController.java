@@ -1,7 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.usuario.UsuarioCreateDTO;
-import com.example.demo.dto.usuario.UsuarioDTO;
+import com.example.demo.dto.usuario.UsuarioResponseDTO;
+import com.example.demo.dto.usuario.UsuarioUpdateDTO;
 import com.example.demo.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,20 +24,20 @@ public class UsuarioController {
     UsuarioService service;
 
     @GetMapping
-    public ResponseEntity<Page<UsuarioDTO>> listarUsuarios(
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarUsuarios(
             @PageableDefault(
                     sort = "nome",
                     direction = Sort.Direction.ASC
             )Pageable pageable){
-        Page<UsuarioDTO> usuarios = service.listagemUsuarios(pageable);
+        Page<UsuarioResponseDTO> usuarios = service.listagemUsuarios(pageable);
         return ResponseEntity.ok(usuarios);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> buscaUsuarioId(
+    public ResponseEntity<UsuarioResponseDTO> buscaUsuarioId(
             @PathVariable Long id
     ) {
-        UsuarioDTO dto = service.usuarioId(id);
+        UsuarioResponseDTO dto = service.usuarioId(id);
         return ResponseEntity.ok(dto);
     }
 
@@ -47,8 +48,14 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> cadastrar(
+    public ResponseEntity<UsuarioResponseDTO> cadastrar(
             @Valid @RequestBody UsuarioCreateDTO createDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarUsuario(createDTO));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioResponseDTO> atualizar(
+            @Valid @RequestBody UsuarioUpdateDTO updateDTO, @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.atualizar(updateDTO, id));
     }
 }

@@ -1,12 +1,14 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.exception.ErroCampo;
-import com.example.demo.dto.usuario.UsuarioDTO;
 import com.example.demo.dto.usuario.UsuarioCreateDTO;
+import com.example.demo.dto.usuario.UsuarioResponseDTO;
+import com.example.demo.dto.usuario.UsuarioUpdateDTO;
 import com.example.demo.exceptions.custom.CadastroInvalidoCustomException;
 import com.example.demo.exceptions.custom.RegistroNaoEncontradoCustomException;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +25,8 @@ public class UsuarioService {
     @Autowired
     UsuarioRepository usuarioRepository;
 
-    private Page<UsuarioDTO> converteDadosPaginados(Page<Usuario> usuarioPage) {
-        return usuarioPage.map(u -> new UsuarioDTO(
+    private Page<UsuarioResponseDTO> converteDadosPaginados(Page<Usuario> usuarioPage) {
+        return usuarioPage.map(u -> new UsuarioResponseDTO(
                 u.getId(),
                 u.getNome(),
                 u.getIsAtivo(),
@@ -37,8 +39,8 @@ public class UsuarioService {
         ));
     }
 
-    private List<UsuarioDTO> converteDadosEmLista(List<Usuario> usuariosList) {
-        return usuariosList.stream().map(u -> new UsuarioDTO(
+    private List<UsuarioResponseDTO> converteDadosEmLista(List<Usuario> usuariosList) {
+        return usuariosList.stream().map(u -> new UsuarioResponseDTO(
                 u.getId(),
                 u.getNome(),
                 u.getIsAtivo(),
@@ -51,20 +53,20 @@ public class UsuarioService {
         )).toList();
     }
 
-    private UsuarioDTO converteUsuarioOptional(Optional<Usuario> optionalUsuario, Long id){
+    private UsuarioResponseDTO converteUsuarioOptional(Optional<Usuario> optionalUsuario, Long id){
 
         if (optionalUsuario.isEmpty()){
-            throw new RegistroNaoEncontradoCustomException(String.format("Usuário de id=%d não encontrado.", id));
+            throw new RegistroNaoEncontradoCustomException(String.format("Usuário de id: %d não encontrado.", id));
         }
 
         Usuario user = optionalUsuario.get();
 
-        return new UsuarioDTO(user.getId(), user.getNome(), user.getIsAtivo(), user.getIdade(),
+        return new UsuarioResponseDTO(user.getId(), user.getNome(), user.getIsAtivo(), user.getIdade(),
                 user.getEmail(), user.getLogin(), user.cpfMascarado(), user.getDataCadastro(), user.getDataAtualizacao());
     }
 
-    private UsuarioDTO converteUsuario(Usuario usuario){
-        return new UsuarioDTO(usuario.getId(), usuario.getNome(), usuario.getIsAtivo(), usuario.getIdade(),
+    private UsuarioResponseDTO converteUsuario(Usuario usuario){
+        return new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getIsAtivo(), usuario.getIdade(),
                 usuario.getEmail(), usuario.getLogin(), usuario.cpfMascarado(), usuario.getDataCadastro(), usuario.getDataAtualizacao());
     }
 
@@ -80,13 +82,13 @@ public class UsuarioService {
         return limpo;
     }
 
-    public Page<UsuarioDTO> listagemUsuarios(Pageable pageable) {
+    public Page<UsuarioResponseDTO> listagemUsuarios(Pageable pageable) {
         Page<Usuario> usuarioPage = usuarioRepository.findAll(pageable);
 
         return converteDadosPaginados(usuarioPage);
     }
 
-    public UsuarioDTO usuarioId(Long id){
+    public UsuarioResponseDTO usuarioId(Long id){
         return converteUsuarioOptional(usuarioRepository.findById(id), id);
     }
 
@@ -94,7 +96,7 @@ public class UsuarioService {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
 
         if (usuario.isEmpty()){
-            throw new RegistroNaoEncontradoCustomException(String.format("Usuário de id=%d não encontrado.", id));
+            throw new RegistroNaoEncontradoCustomException(String.format("Usuário de id: %d não encontrado.", id));
         } else if(usuario.get().inativo()) {
             return;
         } else {
@@ -106,7 +108,7 @@ public class UsuarioService {
         }
     }
 
-    public UsuarioDTO cadastrarUsuario(UsuarioCreateDTO dto) {
+    public UsuarioResponseDTO cadastrarUsuario(UsuarioCreateDTO dto) {
          Usuario usuario = new Usuario(dto.isAtivo(), dto.email(), dto.login(), dto.idade(), limpaCpf(dto.cpf()), dto.nome());
 
          List<ErroCampo> erros = new ArrayList<>();
@@ -127,5 +129,39 @@ public class UsuarioService {
 
          usuario = usuarioRepository.save(usuario);
          return converteUsuario(usuario);
+    }
+
+    public UsuarioResponseDTO atualizar(@Valid UsuarioUpdateDTO updateDTO, Long id) {
+        Optional<Usuario> usuario = usuarioRepository.findByIdAndIsAtivoIsTrue(id);
+
+        List<ErroCampo> erros = new ArrayList<>();
+
+        if (usuario.isEmpty()){
+            throw new RegistroNaoEncontradoCustomException(String.format("Usuário de id: %d não foi encontrado ou está inativo", id));
+        }  else {
+            Usuario user = usuario.get();
+            user.setNome(updateDTO.nome());
+            user.setIdade(updateDTO.idade());
+
+            if (usuarioRepository.existsByEmailAndIdNot(updateDTO.email(), id)){
+                erros.add(new ErroCampo("email", "E-mail já cadastrado."));
+            } else {
+                user.setEmail(updateDTO.email());
+            }
+            if (usuarioRepository.existsByCpfAndIdNot(updateDTO.cpf(), id)){
+                erros.add(new ErroCampo("cpf", "CPF já cadastrado."));
+            } else {
+                user.setCpf(updateDTO.cpf());
+            }
+
+            if (!erros.isEmpty()){
+                throw new CadastroInvalidoCustomException(erros);
+            }
+
+            user.setDataAtualizacao(LocalDateTime.now());
+            usuarioRepository.save(user);
+
+            return converteUsuario(user);
+        }
     }
 }

@@ -1,5 +1,6 @@
 -
-- ISSUE_06: Cria endpoint para atualizar usuario
+- ISSUE-07: Cria filtros na listagem de usuário
+- ISSUE-06: Cria endpoint para atualizar usuario
 - ISSUE-05: Cria endpoint para cadastro de usuario
 - ISSUE-04: Cria endpoint para inativar usuario
 - ISSUE-03: Cria endpoint para busca de usuario por Id

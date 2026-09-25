@@ -2,16 +2,19 @@ package com.example.demo.service;
 
 import com.example.demo.dto.exception.ErroCampo;
 import com.example.demo.dto.usuario.UsuarioCreateDTO;
+import com.example.demo.dto.usuario.UsuarioRequest;
 import com.example.demo.dto.usuario.UsuarioResponseDTO;
 import com.example.demo.dto.usuario.UsuarioUpdateDTO;
 import com.example.demo.exceptions.custom.CadastroInvalidoCustomException;
 import com.example.demo.exceptions.custom.RegistroNaoEncontradoCustomException;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.specifictions.UsuarioSpecification;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -82,8 +85,14 @@ public class UsuarioService {
         return limpo;
     }
 
-    public Page<UsuarioResponseDTO> listagemUsuarios(Pageable pageable) {
-        Page<Usuario> usuarioPage = usuarioRepository.findAll(pageable);
+    public Page<UsuarioResponseDTO> listagemUsuarios(Pageable pageable, UsuarioRequest request) {
+        Specification<Usuario> spec = Specification
+                .where(UsuarioSpecification.nomeContem(request.nome()))
+                .and(UsuarioSpecification.emailContem(request.email()))
+                .and(UsuarioSpecification.isAtivo(request.isAtivo()))
+                .and(UsuarioSpecification.cadastroEntre(request.dataCadastroInicio(), request.dataCadastroFim()));
+
+        Page<Usuario> usuarioPage = usuarioRepository.findAll(spec, pageable);
 
         return converteDadosPaginados(usuarioPage);
     }

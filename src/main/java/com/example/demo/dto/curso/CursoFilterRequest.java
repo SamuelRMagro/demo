@@ -1,12 +1,13 @@
-package com.example.demo.dto.usuario;
+package com.example.demo.dto.curso;
 
 import com.example.demo.customValidations.anotacoesCustomizadas.DataDentroIntervalo;
 
 import java.time.LocalDate;
 
-public record UsuarioRequest(
+public record CursoFilterRequest(
         String nome,
-        String email,
+        Integer cargaHoraria,
+        Integer duracaoSemestre,
         Boolean isAtivo,
 
         @DataDentroIntervalo

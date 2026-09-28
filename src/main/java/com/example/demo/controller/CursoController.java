@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.curso.CursoCreateDTO;
 import com.example.demo.dto.curso.CursoFilterRequest;
 import com.example.demo.dto.curso.CursoResponseDTO;
 import com.example.demo.service.curso.CursoService;
@@ -9,12 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cursos")
@@ -41,5 +40,11 @@ public class CursoController {
     public ResponseEntity<CursoResponseDTO> buscaCursoId(@PathVariable Long id) {
         CursoResponseDTO dto = service.buscarOuFalhar(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping
+    public ResponseEntity<CursoResponseDTO> cadastrar(
+            @Valid @RequestBody CursoCreateDTO createDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarCurso(createDTO));
     }
 }

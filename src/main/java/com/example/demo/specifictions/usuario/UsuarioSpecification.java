@@ -1,4 +1,4 @@
-package com.example.demo.specifictions;
+package com.example.demo.specifictions.usuario;
 
 import com.example.demo.model.Usuario;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,23 +23,23 @@ public class UsuarioSpecification {
                 ativo == null ? null : criteriaBuilder.equal(root.get("isAtivo"), ativo);
     }
 
-    public static Specification<Usuario> cadastroEntre(LocalDate inicio, LocalDate fim) {
-        return (root, query, cb) -> {
-            if (inicio == null && fim == null) return null;
+    public static Specification<Usuario> inicioDepoisDe(LocalDate inicio) {
+        return (root, query, criteriaBuilder) -> {
+            if (inicio == null) return null;
 
             LocalDateTime inicioDateTime = inicio != null ? inicio.atStartOfDay() : null;
-            LocalDateTime fimExclusivo = fim != null ? fim.plusDays(1).atStartOfDay() : null;
 
-            if (inicioDateTime != null && fimExclusivo != null) {
-                return cb.and(
-                        cb.greaterThanOrEqualTo(root.get("dataCadastro"), inicioDateTime),
-                        cb.lessThan(root.get("dataCadastro"), fimExclusivo)
-                );
-            }
-            if (inicioDateTime != null) {
-                return cb.greaterThanOrEqualTo(root.get("dataCadastro"), inicioDateTime);
-            }
-            return cb.lessThan(root.get("dataCadastro"), fimExclusivo);
+            return criteriaBuilder.greaterThanOrEqualTo(root.get("dataCadastro"), inicioDateTime);
+        };
+    }
+
+    public static Specification<Usuario> inicioAntesDe(LocalDate fim) {
+        return (root, query, criteriaBuilder) -> {
+            if (fim == null) return null;
+
+            LocalDateTime fimDateTime = fim != null ? fim.plusDays(1).atStartOfDay() : null;
+
+            return criteriaBuilder.lessThanOrEqualTo(root.get("dataCadastro"), fimDateTime);
         };
     }
 }

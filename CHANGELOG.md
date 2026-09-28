@@ -1,4 +1,5 @@
--
+- 
+- ISSUE-08: Cria endpoint para listar cursos com filtros e paginados
 - ISSUE-07: Cria filtros na listagem de usuário
 - ISSUE-06: Cria endpoint para atualizar usuario
 - ISSUE-05: Cria endpoint para cadastro de usuario

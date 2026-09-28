@@ -39,7 +39,7 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDTO> buscaUsuarioId(
             @PathVariable Long id
     ) {
-        UsuarioResponseDTO dto = service.usuarioId(id);
+        UsuarioResponseDTO dto = service.buscarOuFalhar(id);
         return ResponseEntity.ok(dto);
     }
 

@@ -2,6 +2,8 @@ package com.example.demo.service.curso;
 
 import com.example.demo.dto.curso.CursoFilterRequest;
 import com.example.demo.dto.curso.CursoResponseDTO;
+import com.example.demo.exceptions.custom.RegistroNaoEncontradoCustomException;
+import com.example.demo.mappers.CursoMapper;
 import com.example.demo.model.Curso;
 import com.example.demo.repository.curso.CursoRepository;
 import com.example.demo.specifictions.curso.CursoSpecification;
@@ -13,9 +15,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class CursoService {
     private final CursoRepository cursoRepository;
+    private final CursoMapper mapper;
 
-    public CursoService(CursoRepository cursoRepository) {
+    public CursoService(CursoRepository cursoRepository, CursoMapper mapper) {
         this.cursoRepository = cursoRepository;
+        this.mapper = mapper;
     }
 
     public Page<CursoResponseDTO> listagemCursos(Pageable pageable, CursoFilterRequest request) {
@@ -27,18 +31,14 @@ public class CursoService {
                 .and(CursoSpecification.inicioDepoisDe(request.dataCadastroInicio()))
                 .and(CursoSpecification.inicioAntesDe(request.dataCadastroFim()));
 
-        return converteDadosPaginados(cursoRepository.findAll(spec, pageable));
+        Page<Curso> cursoPage = cursoRepository.findAll(spec, pageable);
+        return cursoPage.map(mapper::fromEntityToDTO);
     }
 
-    private Page<CursoResponseDTO> converteDadosPaginados(Page<Curso> cursoPage){
-        return cursoPage.map(curso -> new CursoResponseDTO(
-                curso.getId(),
-                curso.getNome(),
-                curso.getCargaHoraria(),
-                curso.getDuracaoSemestre(),
-                curso.getIsAtivo(),
-                curso.getDataCriacao(),
-                curso.getDataAtualizacao()
-        ));
+    public CursoResponseDTO buscarOuFalhar(Long id) {
+        Curso curso = cursoRepository.findById(id)
+                .orElseThrow(() -> new RegistroNaoEncontradoCustomException(String.format("Curso de id: %d não encontrado", id)));
+
+        return mapper.fromEntityToDTO(curso);
     }
 }

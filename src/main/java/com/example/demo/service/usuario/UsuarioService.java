@@ -7,11 +7,11 @@ import com.example.demo.dto.usuario.UsuarioResponseDTO;
 import com.example.demo.dto.usuario.UsuarioUpdateDTO;
 import com.example.demo.exceptions.custom.CadastroInvalidoCustomException;
 import com.example.demo.exceptions.custom.RegistroNaoEncontradoCustomException;
+import com.example.demo.mappers.UsuarioMapper;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.usuario.UsuarioRepository;
 import com.example.demo.specifictions.usuario.UsuarioSpecification;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,52 +25,13 @@ import java.util.Optional;
 @Service
 public class UsuarioService {
 
-    @Autowired
-    UsuarioRepository usuarioRepository;
 
-    private Page<UsuarioResponseDTO> converteDadosPaginados(Page<Usuario> usuarioPage) {
-        return usuarioPage.map(u -> new UsuarioResponseDTO(
-                u.getId(),
-                u.getNome(),
-                u.getIsAtivo(),
-                u.getIdade(),
-                u.getEmail(),
-                u.getLogin(),
-                u.cpfMascarado(),
-                u.getDataCadastro(),
-                u.getDataAtualizacao()
-        ));
-    }
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper mapper;
 
-    private List<UsuarioResponseDTO> converteDadosEmLista(List<Usuario> usuariosList) {
-        return usuariosList.stream().map(u -> new UsuarioResponseDTO(
-                u.getId(),
-                u.getNome(),
-                u.getIsAtivo(),
-                u.getIdade(),
-                u.getEmail(),
-                u.getLogin(),
-                u.cpfMascarado(),
-                u.getDataCadastro(),
-                u.getDataAtualizacao()
-        )).toList();
-    }
-
-    private UsuarioResponseDTO converteUsuarioOptional(Optional<Usuario> optionalUsuario, Long id){
-
-        if (optionalUsuario.isEmpty()){
-            throw new RegistroNaoEncontradoCustomException(String.format("Usuário de id: %d não encontrado.", id));
-        }
-
-        Usuario user = optionalUsuario.get();
-
-        return new UsuarioResponseDTO(user.getId(), user.getNome(), user.getIsAtivo(), user.getIdade(),
-                user.getEmail(), user.getLogin(), user.cpfMascarado(), user.getDataCadastro(), user.getDataAtualizacao());
-    }
-
-    private UsuarioResponseDTO converteUsuario(Usuario usuario){
-        return new UsuarioResponseDTO(usuario.getId(), usuario.getNome(), usuario.getIsAtivo(), usuario.getIdade(),
-                usuario.getEmail(), usuario.getLogin(), usuario.cpfMascarado(), usuario.getDataCadastro(), usuario.getDataAtualizacao());
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper mapper) {
+        this.usuarioRepository = usuarioRepository;
+        this.mapper = mapper;
     }
 
     private String limpaCpf(String cpf){
@@ -94,11 +55,14 @@ public class UsuarioService {
                 .and(UsuarioSpecification.inicioAntesDe(request.dataCadastroFim()));
         Page<Usuario> usuarioPage = usuarioRepository.findAll(spec, pageable);
 
-        return converteDadosPaginados(usuarioPage);
+        return usuarioPage.map(mapper::fromEntityToDTO);
     }
 
-    public UsuarioResponseDTO usuarioId(Long id){
-        return converteUsuarioOptional(usuarioRepository.findById(id), id);
+    public UsuarioResponseDTO buscarOuFalhar(Long id){
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RegistroNaoEncontradoCustomException(String.format("Usuário de id: %d não encontrado.", id)));
+
+        return mapper.fromEntityToDTO(usuario);
     }
 
     public void inativar(Long id) {
@@ -137,7 +101,7 @@ public class UsuarioService {
          }
 
          usuario = usuarioRepository.save(usuario);
-         return converteUsuario(usuario);
+         return mapper.fromEntityToDTO(usuario);
     }
 
     public UsuarioResponseDTO atualizar(@Valid UsuarioUpdateDTO updateDTO, Long id) {
@@ -170,7 +134,7 @@ public class UsuarioService {
             user.setDataAtualizacao(LocalDateTime.now());
             usuarioRepository.save(user);
 
-            return converteUsuario(user);
+            return mapper.fromEntityToDTO(user);
         }
     }
 }

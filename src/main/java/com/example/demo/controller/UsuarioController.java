@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.usuario.UsuarioCreateDTO;
-import com.example.demo.dto.usuario.UsuarioRequest;
+import com.example.demo.dto.usuario.UsuarioFilterRequest;
 import com.example.demo.dto.usuario.UsuarioResponseDTO;
 import com.example.demo.dto.usuario.UsuarioUpdateDTO;
-import com.example.demo.service.UsuarioService;
+import com.example.demo.service.usuario.UsuarioService;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class UsuarioController {
             @PageableDefault(
                     sort = "nome",
                     direction = Sort.Direction.ASC
-            )Pageable pageable, @Valid @ParameterObject UsuarioRequest request){
+            )Pageable pageable, @Valid @ParameterObject UsuarioFilterRequest request){
         Page<UsuarioResponseDTO> usuarios = service.listagemUsuarios(pageable, request);
         return ResponseEntity.ok(usuarios);
     }

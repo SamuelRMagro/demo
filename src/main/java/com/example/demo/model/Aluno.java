@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Alunos {
+public class Aluno {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,4 +46,16 @@ public class Alunos {
 
     @Column(name = "data_atualizacao", columnDefinition = "TIMESTAMP DEFAULT NULL")
     private LocalDateTime dataAtualizacao;
+
+    public String cpfMascarado() {
+        if (this.cpf == null) return null;
+
+        String limpo = this.cpf.replaceAll("\\D", "");
+
+        if (limpo.length() != 11){
+            return null;
+        }
+
+        return "***.***.*" + limpo.substring(8, 9) + "-" + limpo.substring(9);
+    }
 }

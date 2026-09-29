@@ -54,4 +54,10 @@ public class CursoController {
             @PathVariable Long id, @Valid @RequestBody CursoUpdateDTO updateDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(service.atualizar(updateDTO, id));
     }
+
+    @PatchMapping("{id}/inativar")
+    public ResponseEntity<Void> inativar(@PathVariable Long id){
+        service.inativar(id);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -41,4 +41,12 @@ public class Curso {
 
     @Column(name = "data_atualizacao", columnDefinition = "TIMESTAMP DEFAULT NULL")
     private LocalDateTime dataAtualizacao;
+
+    public Boolean isAtivo() {
+        return isAtivo;
+    }
+
+    public Boolean isInativo() {
+        return !isAtivo;
+    }
 }

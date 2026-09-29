@@ -1,4 +1,5 @@
 - 
+- ISSUE-12: Cria endpoint para inativar curso
 - ISSUE-11: Cria endpoint para atualizar curso
 - ISSUE-10: Cria endpoint para cadastro de curso
 - ISSUE-09: Cria endpoint para busca de curso por ID

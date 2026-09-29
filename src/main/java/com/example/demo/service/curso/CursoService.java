@@ -3,6 +3,7 @@ package com.example.demo.service.curso;
 import com.example.demo.dto.curso.CursoCreateDTO;
 import com.example.demo.dto.curso.CursoFilterRequest;
 import com.example.demo.dto.curso.CursoResponseDTO;
+import com.example.demo.dto.curso.CursoUpdateDTO;
 import com.example.demo.exceptions.custom.RegistroNaoEncontradoCustomException;
 import com.example.demo.mappers.CursoMapper;
 import com.example.demo.model.Curso;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class CursoService {
@@ -37,16 +40,33 @@ public class CursoService {
         return cursoPage.map(mapper::fromEntityToDTO);
     }
 
-    public CursoResponseDTO buscarOuFalhar(Long id) {
+    public CursoResponseDTO buscarOuFalharDTO(Long id) {
         Curso curso = cursoRepository.findById(id)
                 .orElseThrow(() -> new RegistroNaoEncontradoCustomException(String.format("Curso de id: %d não encontrado", id)));
 
         return mapper.fromEntityToDTO(curso);
     }
 
+    public Curso buscarOuFalharEntity(Long id) {
+        Curso curso = cursoRepository.findById(id)
+                .orElseThrow(() -> new RegistroNaoEncontradoCustomException(String.format("Curso de id: %d não encontrado", id)));
+
+        return curso;
+    }
+
     public CursoResponseDTO cadastrarCurso(@Valid CursoCreateDTO createDTO) {
         Curso curso = mapper.fromCreateDTOtoEntity(createDTO);
         cursoRepository.save(curso);
+        return mapper.fromEntityToDTO(curso);
+    }
+
+    public CursoResponseDTO atualizar(@Valid CursoUpdateDTO updateDTO, Long id) {
+        Curso curso = buscarOuFalharEntity(id);
+        mapper.fromUpdateDTOtoEntity(curso, updateDTO);
+        curso.setDataAtualizacao(LocalDateTime.now());
+
+        cursoRepository.save(curso);
+
         return mapper.fromEntityToDTO(curso);
     }
 }

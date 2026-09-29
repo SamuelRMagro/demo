@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.curso.CursoCreateDTO;
 import com.example.demo.dto.curso.CursoFilterRequest;
 import com.example.demo.dto.curso.CursoResponseDTO;
+import com.example.demo.dto.curso.CursoUpdateDTO;
 import com.example.demo.service.curso.CursoService;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
@@ -38,7 +39,7 @@ public class CursoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CursoResponseDTO> buscaCursoId(@PathVariable Long id) {
-        CursoResponseDTO dto = service.buscarOuFalhar(id);
+        CursoResponseDTO dto = service.buscarOuFalharDTO(id);
         return ResponseEntity.ok(dto);
     }
 
@@ -46,5 +47,11 @@ public class CursoController {
     public ResponseEntity<CursoResponseDTO> cadastrar(
             @Valid @RequestBody CursoCreateDTO createDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarCurso(createDTO));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CursoResponseDTO> atualizar(
+            @PathVariable Long id, @Valid @RequestBody CursoUpdateDTO updateDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.atualizar(updateDTO, id));
     }
 }

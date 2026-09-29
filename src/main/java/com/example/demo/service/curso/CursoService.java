@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -68,5 +69,16 @@ public class CursoService {
         cursoRepository.save(curso);
 
         return mapper.fromEntityToDTO(curso);
+    }
+
+    @Transactional
+    public void inativar(Long id) {
+        Curso curso = buscarOuFalharEntity(id);
+
+        if (curso.isInativo()) {
+            curso.setIsAtivo(false);
+            curso.setDataAtualizacao(LocalDateTime.now());
+            cursoRepository.save(curso);
+        }
     }
 }

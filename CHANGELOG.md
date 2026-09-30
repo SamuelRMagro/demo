@@ -1,4 +1,4 @@
-- 
+- ISSUE-15: Atualização da Estrutura de tb_alunos
 - ISSUE-14: Cria endpoint para listar alunos paginados com filtros
 - ISSUE-13: Cria entidade/tabela aluno
 - ISSUE-12: Cria endpoint para inativar curso

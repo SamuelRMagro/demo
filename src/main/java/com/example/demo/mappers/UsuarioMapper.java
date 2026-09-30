@@ -12,6 +12,6 @@ public interface UsuarioMapper {
     UsuarioResponseDTO fromEntityToDTO(Usuario entity);
 
     default String getCpfMascarado(Usuario user) {
-        return user.cpfMascarado();
+        return user.getCpfMascarado();
     }
 }

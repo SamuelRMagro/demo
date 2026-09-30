@@ -26,7 +26,7 @@ public class AlunoController {
     @GetMapping
     public ResponseEntity<Page<AlunoResponseDTO>> listarAlunos(
             @PageableDefault(
-                    sort = "nome",
+                    sort = "usuario.nome",
                     direction = Sort.Direction.ASC
             ) Pageable pageable, @Valid @ParameterObject AlunoFilterRequest request){
         Page<AlunoResponseDTO> alunos = service.listagemAlunos(pageable, request);

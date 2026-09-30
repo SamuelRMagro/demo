@@ -20,6 +20,9 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(mappedBy = "usuario")
+    private Aluno aluno;
+
     @Column(nullable = false)
     private String nome;
 

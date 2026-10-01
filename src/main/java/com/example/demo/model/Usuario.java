@@ -23,6 +23,9 @@ public class Usuario {
     @OneToOne(mappedBy = "usuario")
     private Aluno aluno;
 
+    @OneToOne(mappedBy = "usuario")
+    private Professor professor;
+
     @Column(nullable = false)
     private String nome;
 

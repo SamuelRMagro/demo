@@ -1,4 +1,5 @@
 - 
+- ISSUE-19: Cria entidade/tabela titulacao
 - ISSUE-18: Cria entidade/tabela professor
 - ISSUE-17: Adiciona documentacao nos endpoints
 - ISSUE-16: Atualização da Entidade Aluno (Listagem)

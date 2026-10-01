@@ -1,4 +1,5 @@
 - 
+- ISSUE-20: Cria entidade/tabela ProfessorTitulacao
 - ISSUE-19: Cria entidade/tabela titulacao
 - ISSUE-18: Cria entidade/tabela professor
 - ISSUE-17: Adiciona documentacao nos endpoints

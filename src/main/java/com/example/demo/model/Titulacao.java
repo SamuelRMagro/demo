@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "tb_titulacoes")
 @Getter
@@ -20,4 +23,7 @@ public class Titulacao {
 
     @Column(nullable = false)
     private String area;
+
+    @OneToMany(mappedBy = "titulacao")
+    private Set<ProfessorTitulacao> professores = new HashSet<>();
 }

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_professores")
@@ -23,4 +25,7 @@ public class Professor {
 
     @Column(nullable = false)
     private LocalDate dataAdmissao;
+
+    @OneToMany(mappedBy = "professor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProfessorTitulacao> titulacoes = new HashSet<>();
 }

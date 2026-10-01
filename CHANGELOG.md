@@ -1,4 +1,5 @@
 - 
+- ISSUE-17: Adiciona documentacao nos endpoints
 - ISSUE-16: Atualização da Entidade Aluno (Listagem)
 - ISSUE-15: Atualização da Estrutura de tb_alunos
 - ISSUE-14: Cria endpoint para listar alunos paginados com filtros

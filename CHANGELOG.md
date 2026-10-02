@@ -1,4 +1,5 @@
-- 
+-
+- ISSUE-22: Cria endpoint para busca de professor por ID
 - ISSUE-21: Cria endpoint para listagem de professores paginados com filtros 
 - ISSUE-20: Cria entidade/tabela ProfessorTitulacao
 - ISSUE-19: Cria entidade/tabela titulacao

@@ -1,9 +1,11 @@
 package com.example.demo.mappers;
 
+import com.example.demo.dto.professor.ProfessorCreateDTO;
 import com.example.demo.dto.professor.ProfessorIdResponseDTO;
 import com.example.demo.dto.professor.ProfessorResponseDTO;
 import com.example.demo.dto.titulacao.TitulacaoResponseDTO;
 import com.example.demo.model.Professor;
+import jakarta.validation.Valid;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -29,4 +31,7 @@ public interface ProfessorMapper {
     @Mapping(source = "list", target = "titulacoes")
     @Mapping(target = "ativo", source = "entity.usuario.isAtivo")
     ProfessorIdResponseDTO fromEntityToTitulacoes(Professor entity, List<TitulacaoResponseDTO> list);
+
+    @Mapping(target = "usuario", source = "createDTO.usuario")
+    Professor fromCreateDtoToEntity(@Valid ProfessorCreateDTO createDTO);
 }

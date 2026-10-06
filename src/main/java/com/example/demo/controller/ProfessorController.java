@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.professor.ProfessorCreateDTO;
 import com.example.demo.dto.professor.ProfessorFilterRequest;
 import com.example.demo.dto.professor.ProfessorIdResponseDTO;
 import com.example.demo.dto.professor.ProfessorResponseDTO;
@@ -17,12 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/professores")
@@ -75,5 +74,22 @@ public class ProfessorController {
             @PathVariable Long id){
         ProfessorIdResponseDTO dto = service.buscarOuFalhar(id);
         return ResponseEntity.ok(dto);
+    }
+
+    @Operation(
+            summary = "Cadastro de professor",
+            description = "Cadastrar professores"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Objeto criado com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProfessorResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Existem campo(s) inválido(s) na requisição", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
+    })
+    @PostMapping
+    public ResponseEntity<ProfessorResponseDTO> cadastrar(
+            @Valid @RequestBody ProfessorCreateDTO createDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarProfessor(createDTO));
     }
 }

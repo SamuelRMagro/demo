@@ -65,6 +65,11 @@ public class UsuarioService {
         return mapper.fromEntityToDTO(usuario);
     }
 
+    public Usuario buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RegistroNaoEncontradoCustomException(String.format("Usuário de id: %d não encontrado.", id)));
+    }
+
     public void inativar(Long id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
 

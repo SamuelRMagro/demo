@@ -8,10 +8,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UsuarioMapper {
 
-    @Mapping(target = "cpf", expression = "java(getCpfMascarado(entity))")
+    @Mapping(target = "cpf", expression = "java(cpfMascarado(entity))")
     UsuarioResponseDTO fromEntityToDTO(Usuario entity);
 
-    default String getCpfMascarado(Usuario user) {
-        return user.getCpfMascarado();
+    default String cpfMascarado(Usuario entity) {
+        return Usuario.cpfMascarado(entity.getCpf());
     }
 }

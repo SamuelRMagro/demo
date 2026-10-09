@@ -56,9 +56,6 @@ public class Usuario {
     @Column(name = "data_inativacao", columnDefinition = "TIMESTAMP DEFAULT NULL")
     private LocalDateTime dataInativacao = null;
 
-    @Transient
-    private String cpfMascarado;
-
     public Usuario(Boolean isAtivo, String email, String login, Integer idade, String cpf, String nome) {
         this.isAtivo = isAtivo;
         this.email = email;
@@ -69,10 +66,10 @@ public class Usuario {
         this.isAtivo = true;
     }
 
-    public String getCpfMascarado() {
-        if (this.cpf == null) return null;
+    public static String cpfMascarado(String cpf) {
+        if (cpf == null) return null;
 
-        String limpo = this.cpf.replaceAll("\\D", "");
+        String limpo = cpf.replaceAll("\\D", "");
 
         if (limpo.length() != 11){
             return null;

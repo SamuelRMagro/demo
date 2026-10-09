@@ -8,7 +8,8 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tb_professor_titulacoes", uniqueConstraints = @UniqueConstraint(columnNames = {"professor_id", "titulacao_id", "data_inicio"}))
+@Table(name = "tb_professor_titulacoes",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"professor_id", "titulacao_id", "data_inicio"}))
 @Getter
 @Setter
 @NoArgsConstructor

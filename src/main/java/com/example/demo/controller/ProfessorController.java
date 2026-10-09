@@ -1,9 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.professor.ProfessorCreateDTO;
-import com.example.demo.dto.professor.ProfessorFilterRequest;
-import com.example.demo.dto.professor.ProfessorIdResponseDTO;
-import com.example.demo.dto.professor.ProfessorResponseDTO;
+import com.example.demo.dto.professor.*;
 import com.example.demo.service.professor.ProfessorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -91,5 +88,23 @@ public class ProfessorController {
     public ResponseEntity<ProfessorResponseDTO> cadastrar(
             @Valid @RequestBody ProfessorCreateDTO createDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarProfessor(createDTO));
+    }
+
+    @Operation(
+            summary = "Atualização de usuario",
+            description = "Altera dados do usuario por Id"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Objeto atualizado com sucesso",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProfessorResponseDTO02.class))),
+            @ApiResponse(responseCode = "400", description = "Existem campo(s) inválido(s) na requisição", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Objeto não encontrado", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<ProfessorResponseDTO02> atualizar(
+            @Valid @RequestBody ProfessorUpdateDTO updateDTO, @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(service.atualizarProfessor(updateDTO, id));
     }
 }

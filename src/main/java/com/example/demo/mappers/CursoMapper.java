@@ -10,6 +10,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface CursoMapper {
     CursoResponseDTO fromEntityToDTO(Curso entity);
+
     Curso fromCreateDTOtoEntity(CursoCreateDTO dto);
+
     void fromUpdateDTOtoEntity(@MappingTarget Curso curso, CursoUpdateDTO updateDTO);
 }

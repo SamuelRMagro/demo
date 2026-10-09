@@ -1,9 +1,6 @@
 package com.example.demo.service.professor;
 
-import com.example.demo.dto.professor.ProfessorCreateDTO;
-import com.example.demo.dto.professor.ProfessorFilterRequest;
-import com.example.demo.dto.professor.ProfessorIdResponseDTO;
-import com.example.demo.dto.professor.ProfessorResponseDTO;
+import com.example.demo.dto.professor.*;
 import com.example.demo.dto.titulacao.TitulacaoResponseDTO;
 import com.example.demo.dto.usuario.UsuarioResponseDTO;
 import com.example.demo.exceptions.custom.RegistroNaoEncontradoCustomException;
@@ -72,5 +69,22 @@ public class ProfessorService {
         professor.setUsuario(usuarioSaved);
 
         return professorMapper.fromEntityToDTO(professorRepository.save(professor));
+    }
+
+    @Transactional
+    public ProfessorResponseDTO02 atualizarProfessor(@Valid ProfessorUpdateDTO updateDTO, Long id) {
+        Professor professor = buscarUsuarioAtivoOuFalhar(id);
+
+        UsuarioResponseDTO usuarioResponseDTO = usuarioService.atualizar(updateDTO.usuario(), professor.getUsuario().getId());
+        professor.setDataAdmissao(updateDTO.dataAdmissao());
+
+        professor.setUsuario(usuarioService.buscarPorId(professor.getUsuario().getId()));
+        professorRepository.save(professor);
+        return professorMapper.fromEntityToDTO02(professor);
+    }
+
+    private Professor buscarUsuarioAtivoOuFalhar(Long id) {
+       return professorRepository.findByIdAndUsuario_IsAtivo(id, true)
+               .orElseThrow(() -> new RegistroNaoEncontradoCustomException("Usuario de id: %d não encontrado!"));
     }
 }
